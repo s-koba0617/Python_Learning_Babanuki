@@ -1,8 +1,6 @@
 from pydantic import BaseModel
 import random
 
-# test
-
 
 class Player(BaseModel):
     """
@@ -77,9 +75,19 @@ class Dealer:
         return deck
 
 
+class Display:
+
+    def look_player_deck(self, player: Player):
+        print(f"{player.name}の手札: {player.deck}")
+
+    def look_selected_card(self, player: Player, card: str):
+        print(f"{player.name}さんが引いたカード：{card}")
+
+
 class Babanuki:
 
-    def __init__(self, players: list):
+    def __init__(self, players: list, display: Display):
+        self.display = display
         self.players = players
 
     def create_turn_index(self, passer_i: int, taker_i: int) -> tuple:
@@ -105,6 +113,7 @@ class Babanuki:
         else:
             # is_auto == False
             while True:
+                self.display.look_player_deck(taker)
                 text = ""
                 for n in range(len(passer.deck)):
                     text += f"[{n+1}]"
@@ -121,6 +130,7 @@ class Babanuki:
                     break
             print(f"\あなたは {select_index+1}番目のカードを選択しました。")
         selected_card = passer.deck.pop(select_index)
+        self.display.look_selected_card(taker, selected_card)
         return selected_card
 
     def putdown_or_add(self, selected_card: str, taker: Player):
@@ -178,6 +188,8 @@ player1 = Player(name="A", is_auto=False)
 player2 = Player(name="B")
 player3 = Player(name="C")
 
+display = Display()
+
 # プレイヤーリストへ格納
 players = dealer.initial_deal([player1, player2, player3])
 
@@ -185,5 +197,5 @@ players = dealer.initial_deal([player1, player2, player3])
 for i in range(len(players)):
     players[i].deck = dealer.initial_putdown(players[i].deck)
 
-babanuki = Babanuki(players)
+babanuki = Babanuki(players, display)
 babanuki.run()
