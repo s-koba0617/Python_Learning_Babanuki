@@ -124,7 +124,10 @@ class Babanuki:
         return selected_card
 
     def putdown_or_add(self, selected_card: str, taker: Player):
-        """ """
+        """
+        引いたカードが手札に存在する場合はそのカードを捨てます。
+        存在しない場合は手札に加えます。
+        """
         try:
             taker.deck.remove(selected_card)
         except ValueError:
